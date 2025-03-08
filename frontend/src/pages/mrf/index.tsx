@@ -27,7 +27,7 @@ const MrfFilesPage = observer(() => {
   }, []);
 
   const handleGenerateMrf = async () => {
-    if (claimsStore.savedClaims.length === 0) {
+    if (claimsStore.savedClaims.length === 0 || claimsStore.claimsUsedForMrf) {
       return;
     }
 
@@ -36,6 +36,7 @@ const MrfFilesPage = observer(() => {
     setGenerating(false);
     
     if (success) {
+      claimsStore.markClaimsAsUsedForMrf();
       setGenerationSuccess(true);
       setTimeout(() => {
         setGenerateModalOpen(false);
@@ -90,8 +91,9 @@ const MrfFilesPage = observer(() => {
               <Button 
                 onClick={handleGenerateMrf} 
                 loading={generating}
-                disabled={claimsStore.savedClaims.length === 0}
+                disabled={claimsStore.savedClaims.length === 0 || claimsStore.claimsUsedForMrf}
                 color="green"
+                title={claimsStore.claimsUsedForMrf ? "Upload new claims data to generate another MRF file" : ""}
               >
                 Generate
               </Button>
@@ -105,6 +107,8 @@ const MrfFilesPage = observer(() => {
         <Button 
           color="green" 
           onClick={() => setGenerateModalOpen(true)}
+          disabled={claimsStore.savedClaims.length === 0 || claimsStore.claimsUsedForMrf}
+          title={claimsStore.claimsUsedForMrf ? "Upload new claims data to generate another MRF file" : ""}
         >
           Generate New MRF File
         </Button>

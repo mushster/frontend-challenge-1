@@ -12,6 +12,7 @@ export class ClaimsStore {
   isUploading: boolean = false;
   parseError: string | null = null;
   showSuccessAlert: boolean = false;
+  claimsUsedForMrf: boolean = false;
   
   constructor() {
     makeAutoObservable(this);
@@ -84,6 +85,7 @@ export class ClaimsStore {
         this.claims = validatedClaims;
         this.savedClaims = [...validatedClaims];
         this.errors = errors;
+        this.claimsUsedForMrf = false;
         
         console.log("Validated claims:", validatedClaims.length);
         console.log("Errors:", Object.keys(errors).length);
@@ -154,6 +156,7 @@ export class ClaimsStore {
     
     // Save the current claims to savedClaims for later use in MRF generation
     this.savedClaims = [...this.claims];
+    this.claimsUsedForMrf = false;
     
     // Show the success alert
     this.showSuccessAlert = true;
@@ -169,6 +172,10 @@ export class ClaimsStore {
     // Also reset any related state while keeping data in savedClaims
     this.errors = {};
     this.parseError = null;
+  };
+  
+  markClaimsAsUsedForMrf = () => {
+    this.claimsUsedForMrf = true;
   };
 }
 

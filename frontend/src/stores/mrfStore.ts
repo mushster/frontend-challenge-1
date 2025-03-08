@@ -90,6 +90,9 @@ export class MrfStore {
           fileSize: "2.9 MB",
           status: "generated"
         });
+        
+        // Mark the claims as used in the claims store
+        claimsStore.markClaimsAsUsedForMrf();
       });
       
       return true;
