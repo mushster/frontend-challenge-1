@@ -1,0 +1,4 @@
+tin,providerName,npi,procedureCode,billingCodeType,negotiatedRate,effectiveDate,expirationDate,serviceCode,description
+123456789,Memorial Hospital,1234567890,99213,CPT,125.50,2023-01-01,2024-12-31,GEN,General outpatient visit
+987654321,City Medical Group,9876543210,J1071,HCPCS,237.85,2023-01-01,2024-12-31,INJ,Injection service
+456789123,University Health,4567891230,470,DRG,1250.00,2023-01-01,2024-12-31,INP,Inpatient procedure 
