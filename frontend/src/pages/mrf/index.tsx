@@ -13,7 +13,7 @@ import {
   Alert, 
   Modal 
 } from "@mantine/core";
-import { IconFile, IconDownload, IconAlertCircle } from "@tabler/icons-react";
+import { IconFile, IconDownload, IconAlertCircle, IconCheck } from "@tabler/icons-react";
 import mrfStore from "../../stores/mrfStore";
 import claimsStore from "../../stores/claimsStore";
 
@@ -49,13 +49,23 @@ const MrfFilesPage = observer(() => {
       <Modal
         opened={generateModalOpen}
         onClose={() => setGenerateModalOpen(false)}
-        title="Generate MRF File"
+        title={generationSuccess ? "" : "Generate MRF File"}
         centered
       >
         {generationSuccess ? (
-          <div className="flex flex-col items-center my-8">
-            <Badge color="green" size="xl" radius="sm" className="mb-4">Success</Badge>
-            <Text>MRF file generated successfully!</Text>
+          <div className="flex flex-col items-center gap-4 py-4">
+            <IconCheck size={50} color="#00dd7c" stroke={2} />
+            <Text size="lg" fw={500}>MRF file generated successfully!</Text>
+            <Button 
+              onClick={() => {
+                setGenerateModalOpen(false);
+                setGenerationSuccess(false);
+              }} 
+              color="green" 
+              mt="md"
+            >
+              Done
+            </Button>
           </div>
         ) : (
           <>
@@ -73,7 +83,7 @@ const MrfFilesPage = observer(() => {
               </Text>
             )}
             
-            <Group position="right" className="mt-6">
+            <Group justify="flex-end" className="mt-6">
               <Button variant="outline" onClick={() => setGenerateModalOpen(false)}>
                 Cancel
               </Button>

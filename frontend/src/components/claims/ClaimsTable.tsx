@@ -7,10 +7,6 @@ import { Button, Text, Badge, Group, Collapse, Modal } from "@mantine/core";
 import { IconChevronDown, IconChevronUp, IconCheck } from '@tabler/icons-react';
 import claimsStore, { Claim } from "../../stores/claimsStore";
 
-// Import AG Grid styles in index.tsx or main App component
-// import "ag-grid-community/styles/ag-grid.css";
-// import "ag-grid-community/styles/ag-theme-alpine.css";
-
 const ClaimsTable = observer(() => {
   const gridRef = useRef<AgGridReact>(null);
   const [rowData, setRowData] = useState<(Claim & { id: number })[]>([]);

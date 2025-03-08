@@ -29,11 +29,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/mrf-files",
-        element: (
-          <ProtectedRoute>
-            <MrfFilesPage />
-          </ProtectedRoute>
-        ),
+        element: <MrfFilesPage />,
       },
     ],
     errorElement: <NotFoundPage />,

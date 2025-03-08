@@ -12,10 +12,6 @@ const Header = observer(() => {
     navigate('/login');
   };
   
-  if (!authStore.isAuthenticated) {
-    return null;
-  }
-
   // Determine active tab based on current path
   const getActiveTab = () => {
     if (location.pathname.includes('/claims')) return 'claims';
@@ -31,17 +27,27 @@ const Header = observer(() => {
           
           <Tabs value={getActiveTab()} onChange={(value) => navigate(`/${value}`)}>
             <Tabs.List>
-              <Tabs.Tab value="claims">Claims Management</Tabs.Tab>
+              {authStore.isAuthenticated && (
+                <Tabs.Tab value="claims">Claims Management</Tabs.Tab>
+              )}
               <Tabs.Tab value="mrf-files">MRF Files</Tabs.Tab>
             </Tabs.List>
           </Tabs>
         </div>
         
         <Group>
-          <Text size="sm">Welcome, {authStore.username}</Text>
-          <Button variant="subtle" color="gray" size="sm" onClick={handleLogout}>
-            Logout
-          </Button>
+          {authStore.isAuthenticated ? (
+            <>
+              <Text size="sm">Welcome, {authStore.username}</Text>
+              <Button variant="subtle" color="gray" size="sm" onClick={handleLogout}>
+                Logout
+              </Button>
+            </>
+          ) : (
+            <Button variant="subtle" color="green" size="sm" onClick={() => navigate('/login')}>
+              Login
+            </Button>
+          )}
         </Group>
       </div>
     </div>
