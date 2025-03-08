@@ -75,11 +75,7 @@ const MrfFilesPage = observer(() => {
             </Button>
           </div>
         ) : (
-          <>
-            <Text className="mb-6">
-              This will generate a new MRF file based on your approved claims data.
-            </Text>
-            
+             <>
             {claimsStore.savedClaims.length === 0 ? (
               <Alert color="yellow" title="No Claims Data" icon={<IconAlertCircle size={16} />}>
                 You don't have any approved claims data. Please approve claims before generating an MRF file.
@@ -89,16 +85,6 @@ const MrfFilesPage = observer(() => {
                 <Text size="sm" c="dimmed">
                   Found {claimsStore.savedClaims.length} approved claims that will be used for MRF generation.
                 </Text>
-                
-                <div className="mt-4">
-                  <Text size="sm" fw={500}>What will happen:</Text>
-                  <ul className="list-disc pl-6 text-sm mt-2">
-                    <li>Claims data will be processed according to CMS guidelines</li>
-                    <li>Data will be grouped by procedure codes and providers</li>
-                    <li>Allowed amounts will be calculated for each service</li>
-                    <li>JSON file will be generated in the required CMS format</li>
-                  </ul>
-                </div>
               </>
             )}
             
