@@ -28,4 +28,16 @@ const theme = createTheme({
       "#002d01", // Darker shade
     ],
   },
+  components: {
+    Paper: {
+      defaultProps: {
+        p: "md",
+      },
+    },
+    Button: {
+      defaultProps: {
+        radius: "sm",
+      },
+    },
+  },
 });

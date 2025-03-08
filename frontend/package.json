@@ -11,7 +11,9 @@
   },
   "dependencies": {
     "@mantine/core": "^7.12.2",
+    "@mantine/form": "^7.17.1",
     "@mantine/hooks": "^7.12.2",
+    "@tabler/icons-react": "^3.31.0",
     "ag-grid-community": "^33.1.1",
     "ag-grid-react": "^33.1.1",
     "mobx": "^6.13.6",

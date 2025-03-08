@@ -34,23 +34,61 @@ export class ClaimsStore {
         const validatedClaims: Claim[] = [];
         const errors: Record<number, string[]> = {};
         
-        result.data.forEach((row, index) => {
+        result.data.forEach((row: any, index) => {
           try {
-            const validClaim = claimSchema.parse(row);
+            // Map CSV column names to our schema field names
+            const mappedRow = {
+              claimId: row["Claim ID"],
+              subscriberId: row["Subscriber ID"],
+              memberSequence: row["Member Sequence"],
+              claimStatus: row["Claim Status"],
+              billed: row["Billed"],
+              allowed: row["Allowed"],
+              paid: row["Paid"],
+              paymentStatusDate: row["Payment Status Date"],
+              serviceDate: row["Service Date"],
+              receivedDate: row["Received Date"],
+              entryDate: row["Entry Date"],
+              processedDate: row["Processed Date"],
+              paidDate: row["Paid Date"],
+              paymentStatus: row["Payment Status"],
+              groupName: row["Group Name"],
+              groupId: row["Group ID"],
+              divisionName: row["Division Name"],
+              divisionId: row["Division ID"],
+              plan: row["Plan"],
+              planId: row["Plan ID"],
+              placeOfService: row["Place of Service"],
+              claimType: row["Claim Type"],
+              procedureCode: row["Procedure Code"],
+              memberGender: row["Member Gender"],
+              providerId: row["Provider ID"],
+              providerName: row["Provider Name"],
+            };
+            
+            const validClaim = claimSchema.parse(mappedRow);
             validatedClaims.push(validClaim);
           } catch (error) {
             if (error instanceof z.ZodError) {
               errors[index] = error.errors.map(e => `${e.path.join('.')}: ${e.message}`);
+            } else {
+              // Handle unexpected errors
+              console.error("Unexpected error during validation:", error);
+              errors[index] = ["Unexpected error occurred during validation"];
             }
           }
         });
         
         this.claims = validatedClaims;
         this.errors = errors;
+        
+        console.log("Validated claims:", validatedClaims.length);
+        console.log("Errors:", Object.keys(errors).length);
       });
     } catch (error) {
       runInAction(() => {
         this.parseError = error instanceof Error ? error.message : "Failed to parse CSV file";
+        console.error("Parse error:", this.parseError);
       });
     } finally {
       runInAction(() => {
@@ -107,8 +145,8 @@ export class ClaimsStore {
   
   approveAndExport = () => {
     // This would eventually connect to a backend API
-    console.log("Approved claims ready for MRF generation:", this.claims);
-    alert("Claims approved and ready for MRF generation!");
+    console.log("Approved claims ready for processing:", this.claims);
+    alert("Claims approved and ready for processing!");
     // In a real implementation, this would make an API call to the backend
   };
 }
