@@ -3,8 +3,8 @@ import { AgGridReact } from "ag-grid-react";
 import { ColDef, GridReadyEvent, CellEditingStoppedEvent } from "ag-grid-community";
 import { ClientSideRowModelModule } from "ag-grid-community";
 import { useRef, useState, useEffect } from "react";
-import { Button, Text, Badge, Group, Collapse } from "@mantine/core";
-import { IconChevronDown, IconChevronUp } from '@tabler/icons-react';
+import { Button, Text, Badge, Group, Collapse, Modal } from "@mantine/core";
+import { IconChevronDown, IconChevronUp, IconCheck } from '@tabler/icons-react';
 import claimsStore, { Claim } from "../../stores/claimsStore";
 
 // Import AG Grid styles in index.tsx or main App component
@@ -130,9 +130,34 @@ const ClaimsTable = observer(() => {
   
   return (
     <div className="flex flex-col h-full">
+      {/* Success Modal */}
+      <Modal
+        opened={claimsStore.showSuccessAlert}
+        onClose={claimsStore.dismissSuccessAlert}
+        centered
+        size="md"
+      >
+        <div className="flex flex-col items-center gap-4 py-4">
+          <IconCheck size={50} color="#00dd7c" stroke={2} />
+          <Text size="lg" fw={500}>Claims approved and ready for processing!</Text>
+          <Button 
+            onClick={claimsStore.dismissSuccessAlert} 
+            color="green" 
+            mt="md"
+          >
+            Done
+          </Button>
+        </div>
+      </Modal>
+      
       <div className="flex justify-between items-center mb-3">
         <Group>
           <Text size="md" fw={600}>Claims Data</Text>
+          {rowData.length > 0 && (
+            <Text size="sm" c="#00dd7c" fw={500}>
+              ({rowData.length} claims)
+            </Text>
+          )}
           {errorCount > 0 && (
             <Badge color="red" variant="light">
               {errorCount} error{errorCount > 1 ? 's' : ''}
@@ -176,6 +201,11 @@ const ClaimsTable = observer(() => {
             paginationPageSize={20}
             domLayout="normal"
             modules={[ClientSideRowModelModule]}
+            singleClickEdit={true}
+            editType="fullRow"
+            rowClassRules={{
+              'hover-highlight': () => true
+            }}
           />
         </div>
       ) : (

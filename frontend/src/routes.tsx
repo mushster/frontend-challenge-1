@@ -4,6 +4,7 @@ import NotFoundPage from "./pages/error/NotFound";
 import MainPage from "./pages/index";
 import ClaimsApprovalPage from "./pages/claims";
 import LoginPage from "./pages/auth/LoginPage";
+import MrfFilesPage from "./pages/mrf";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const router = createBrowserRouter([
@@ -23,6 +24,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <ClaimsApprovalPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/mrf-files",
+        element: (
+          <ProtectedRoute>
+            <MrfFilesPage />
           </ProtectedRoute>
         ),
       },

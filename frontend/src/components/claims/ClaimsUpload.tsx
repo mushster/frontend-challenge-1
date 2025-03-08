@@ -1,18 +1,18 @@
-import { FileInput, Button, Group, Alert, Progress } from "@mantine/core";
+import { FileInput, Button, Group, Alert, Progress, Text } from "@mantine/core";
 import { useState } from "react";
 import { observer } from "mobx-react-lite";
 import claimsStore from "../../stores/claimsStore";
 
 const ClaimsUpload = observer(() => {
   const [file, setFile] = useState<File | null>(null);
+  const [lastUploadedFile, setLastUploadedFile] = useState<string | null>(null);
   
   const handleUpload = async () => {
     if (file) {
-      // Clear any previous data before uploading
       claimsStore.clearAll();
       await claimsStore.uploadCSV(file);
       
-      // Reset file input after upload
+      setLastUploadedFile(file.name);
       setFile(null);
     }
   };
@@ -40,6 +40,12 @@ const ClaimsUpload = observer(() => {
         </Button>
       </Group>
       
+      {lastUploadedFile && claimsStore.claims.length > 0 && (
+        <Text size="xs" c="dimmed" className="mt-1">
+          Current data from: {lastUploadedFile}
+        </Text>
+      )}
+      
       {claimsStore.isUploading && (
         <Progress 
           value={100} 
@@ -52,14 +58,6 @@ const ClaimsUpload = observer(() => {
       {claimsStore.parseError && (
         <Alert color="red" title="Error" className="mt-3">
           {claimsStore.parseError}
-        </Alert>
-      )}
-      
-      {claimsStore.claims.length > 0 && !claimsStore.parseError && (
-        <Alert color="green" title="Success" className="mt-3">
-          Successfully loaded {claimsStore.claims.length} claims
-          {Object.keys(claimsStore.errors).length > 0 && 
-            ` (${Object.keys(claimsStore.errors).length} with errors)`}
         </Alert>
       )}
     </div>

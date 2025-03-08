@@ -7,9 +7,11 @@ export type Claim = z.infer<typeof claimSchema>;
 
 export class ClaimsStore {
   claims: Claim[] = [];
+  savedClaims: Claim[] = [];
   errors: Record<number, string[]> = {};
   isUploading: boolean = false;
   parseError: string | null = null;
+  showSuccessAlert: boolean = false;
   
   constructor() {
     makeAutoObservable(this);
@@ -80,6 +82,7 @@ export class ClaimsStore {
         });
         
         this.claims = validatedClaims;
+        this.savedClaims = [...validatedClaims];
         this.errors = errors;
         
         console.log("Validated claims:", validatedClaims.length);
@@ -106,6 +109,7 @@ export class ClaimsStore {
       
       // If validation passes, update the claim
       this.claims[index] = claim as Claim;
+      this.savedClaims[index] = claim as Claim;
       
       // Clear any errors for this index
       if (this.errors[index]) {
@@ -122,6 +126,7 @@ export class ClaimsStore {
   
   deleteClaim = (index: number) => {
     this.claims = this.claims.filter((_, i) => i !== index);
+    this.savedClaims = this.savedClaims.filter((_, i) => i !== index);
     
     // Update error indices after deletion
     const newErrors: Record<number, string[]> = {};
@@ -139,18 +144,33 @@ export class ClaimsStore {
   
   clearAll = () => {
     this.claims = [];
+    this.savedClaims = [];
     this.errors = {};
     this.parseError = null;
   };
   
-  approveAndExport = () => {
-    // This would eventually connect to a backend API
+  approveAndExport = async () => {
     console.log("Approved claims ready for processing:", this.claims);
-    alert("Claims approved and ready for processing!");
-    // In a real implementation, this would make an API call to the backend
+    
+    // Save the current claims to savedClaims for later use in MRF generation
+    this.savedClaims = [...this.claims];
+    
+    // Show the success alert
+    this.showSuccessAlert = true;
+    
+    // Optionally, you could immediately trigger MRF generation here
+    // await mrfStore.generateMrfFile(this.claims);
+  };
+  
+  dismissSuccessAlert = () => {
+    this.showSuccessAlert = false;
+    // Clear the displayed claims but keep them in savedClaims
+    this.claims = [];
+    // Also reset any related state while keeping data in savedClaims
+    this.errors = {};
+    this.parseError = null;
   };
 }
 
-// Create a single instance of the store
 const claimsStore = new ClaimsStore();
 export default claimsStore; 

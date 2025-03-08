@@ -15,10 +15,9 @@ export class AuthStore {
     this.error = null;
 
     try {
-      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 800));
       
-      // Simple validation - in a real app, this would be a server check
+      // Simple validation
       if (password === "password") {
         this.isAuthenticated = true;
         this.username = username;
