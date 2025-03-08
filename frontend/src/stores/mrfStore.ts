@@ -14,6 +14,7 @@ export class MrfStore {
   mrfFiles: MrfFile[] = [];
   isLoading: boolean = false;
   error: string | null = null;
+  generatedMrfData: any = null; // To store the actual MRF data for download
 
   constructor() {
     makeAutoObservable(this);
@@ -24,40 +25,21 @@ export class MrfStore {
     this.error = null;
 
     try {
-      // In a real app, this would be an API call
-      // For now, we'll simulate a delay and return mock data
-      await new Promise(resolve => setTimeout(resolve, 800));
+      // In a real implementation, fetch from the backend API
+      const response = await fetch('http://localhost:8080/api/mrf-files');
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch MRF files: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
       
       runInAction(() => {
-        this.mrfFiles = [
-          {
-            id: "1",
-            fileName: "out-of-network-rates_clearest-health_2023-01-01.json",
-            plan: "Clearest Health Premium Plan",
-            createdDate: "2023-01-01",
-            fileSize: "2.3 MB",
-            status: "generated"
-          },
-          {
-            id: "2",
-            fileName: "out-of-network-rates_clearest-health_2023-02-15.json",
-            plan: "Clearest Health Basic Plan",
-            createdDate: "2023-02-15",
-            fileSize: "1.8 MB",
-            status: "generated"
-          },
-          {
-            id: "3",
-            fileName: "out-of-network-rates_clearest-health_2023-03-10.json",
-            plan: "Clearest Health Premium Plan",
-            createdDate: "2023-03-10",
-            fileSize: "3.1 MB",
-            status: "generated"
-          }
-        ];
+        this.mrfFiles = data.mrfFiles || [];
       });
     } catch (error) {
       runInAction(() => {
+        console.error("Error fetching MRF files:", error);
         this.error = error instanceof Error ? error.message : "Failed to fetch MRF files";
       });
     } finally {
@@ -70,35 +52,94 @@ export class MrfStore {
   generateMrfFile = async (claims: Claim[]) => {
     this.isLoading = true;
     this.error = null;
+    this.generatedMrfData = null;
 
     try {
-      // In a real app, this would send the data to a backend API
-      // For now, simulate a delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Generate a unique ID for the new file
-      const newId = (this.mrfFiles.length + 1).toString();
-      const today = new Date().toISOString().split('T')[0];
+      // Validate we have claims to process
+      if (claims.length === 0) {
+        throw new Error("No claims data available to generate MRF file");
+      }
+
+      // Send claims data to the backend API
+      const response = await fetch('http://localhost:8080/api/generate-mrf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ claims }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to generate MRF file');
+      }
+
+      const data = await response.json();
       
       runInAction(() => {
-        // Add the new file to the list
-        this.mrfFiles.unshift({
-          id: newId,
-          fileName: `out-of-network-rates_clearest-health_${today}.json`,
-          plan: "Clearest Health Premium Plan",
-          createdDate: today,
-          fileSize: "2.9 MB",
-          status: "generated"
-        });
-        
-        // Mark the claims as used in the claims store
-        claimsStore.markClaimsAsUsedForMrf();
+        if (data.success && data.mrfFile) {
+          // Add the new MRF file to the list
+          this.mrfFiles.unshift(data.mrfFile);
+          
+          // Mark the claims as used in the claims store
+          claimsStore.markClaimsAsUsedForMrf();
+        } else {
+          throw new Error(data.error || 'Unknown error generating MRF file');
+        }
       });
       
       return true;
     } catch (error) {
       runInAction(() => {
+        console.error("Error generating MRF file:", error);
         this.error = error instanceof Error ? error.message : "Failed to generate MRF file";
+      });
+      return false;
+    } finally {
+      runInAction(() => {
+        this.isLoading = false;
+      });
+    }
+  };
+
+  downloadMrfFile = async (fileId: string) => {
+    this.isLoading = true;
+    this.error = null;
+
+    try {
+      // Fetch the MRF file data from the backend
+      const response = await fetch(`http://localhost:8080/api/mrf-files/${fileId}/download`);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to download MRF file: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      
+      // Create a downloadable file
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      // Create a temporary link and trigger download
+      const a = document.createElement('a');
+      a.href = url;
+      
+      // Find the file name from our list
+      const file = this.mrfFiles.find(f => f.id === fileId);
+      a.download = file ? file.fileName : `mrf-file-${fileId}.json`;
+      
+      document.body.appendChild(a);
+      a.click();
+      
+      // Cleanup
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      return true;
+    } catch (error) {
+      runInAction(() => {
+        console.error("Error downloading MRF file:", error);
+        this.error = error instanceof Error ? error.message : "Failed to download MRF file";
       });
       return false;
     } finally {

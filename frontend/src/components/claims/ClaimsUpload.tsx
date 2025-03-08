@@ -18,7 +18,7 @@ const ClaimsUpload = observer(() => {
   };
   
   return (
-    <div className="flex flex-col gap-2 m-1">
+    <div className="flex flex-col gap-2">
       <Group align="flex-end" grow>
         <FileInput
           placeholder="Select a CSV file"

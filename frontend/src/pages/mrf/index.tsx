@@ -21,6 +21,7 @@ const MrfFilesPage = observer(() => {
   const [generateModalOpen, setGenerateModalOpen] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [generationSuccess, setGenerationSuccess] = useState(false);
+  const [downloadingFileId, setDownloadingFileId] = useState<string | null>(null);
 
   useEffect(() => {
     mrfStore.fetchMrfFiles();
@@ -36,13 +37,18 @@ const MrfFilesPage = observer(() => {
     setGenerating(false);
     
     if (success) {
-      claimsStore.markClaimsAsUsedForMrf();
       setGenerationSuccess(true);
       setTimeout(() => {
         setGenerateModalOpen(false);
         setGenerationSuccess(false);
       }, 2000);
     }
+  };
+
+  const handleDownloadFile = async (fileId: string) => {
+    setDownloadingFileId(fileId);
+    await mrfStore.downloadMrfFile(fileId);
+    setDownloadingFileId(null);
   };
 
   return (
@@ -79,9 +85,21 @@ const MrfFilesPage = observer(() => {
                 You don't have any approved claims data. Please approve claims before generating an MRF file.
               </Alert>
             ) : (
-              <Text size="sm" c="dimmed">
-                Found {claimsStore.savedClaims.length} approved claims that will be used for MRF generation.
-              </Text>
+              <>
+                <Text size="sm" c="dimmed">
+                  Found {claimsStore.savedClaims.length} approved claims that will be used for MRF generation.
+                </Text>
+                
+                <div className="mt-4">
+                  <Text size="sm" fw={500}>What will happen:</Text>
+                  <ul className="list-disc pl-6 text-sm mt-2">
+                    <li>Claims data will be processed according to CMS guidelines</li>
+                    <li>Data will be grouped by procedure codes and providers</li>
+                    <li>Allowed amounts will be calculated for each service</li>
+                    <li>JSON file will be generated in the required CMS format</li>
+                  </ul>
+                </div>
+              </>
             )}
             
             <Group justify="flex-end" className="mt-6">
@@ -115,7 +133,7 @@ const MrfFilesPage = observer(() => {
       </div>
       
       <Paper shadow="xs" p="md" withBorder>
-        {mrfStore.isLoading ? (
+        {mrfStore.isLoading && !downloadingFileId ? (
           <div className="flex justify-center py-12">
             <Loader />
           </div>
@@ -165,6 +183,8 @@ const MrfFilesPage = observer(() => {
                       variant="subtle" 
                       size="xs"
                       disabled={file.status !== "generated"}
+                      loading={downloadingFileId === file.id}
+                      onClick={() => handleDownloadFile(file.id)}
                     >
                       Download
                     </Button>
@@ -175,6 +195,7 @@ const MrfFilesPage = observer(() => {
           </Table>
         )}
       </Paper>
+      
     </Container>
   );
 });

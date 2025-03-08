@@ -12,7 +12,6 @@ const Header = observer(() => {
     navigate('/login');
   };
   
-  // Determine active tab based on current path
   const getActiveTab = () => {
     if (location.pathname.includes('/claims')) return 'claims';
     if (location.pathname.includes('/mrf-files')) return 'mrf-files';
@@ -22,9 +21,13 @@ const Header = observer(() => {
   return (
     <div className="p-4 border-b">
       <div className="container mx-auto flex justify-between items-center">
-        <div className="flex items-center gap-4">
+        {/* Logo section */}
+        <div>
           <Text size="lg" c="#00dd7c" fw={600}>Clearest Health</Text>
-          
+        </div>
+        
+        {/* Centered navigation tabs */}
+        <div className="flex-grow flex justify-center">
           <Tabs value={getActiveTab()} onChange={(value) => navigate(`/${value}`)}>
             <Tabs.List>
               {authStore.isAuthenticated && (
@@ -35,17 +38,18 @@ const Header = observer(() => {
           </Tabs>
         </div>
         
+        {/* User controls section */}
         <Group>
           {authStore.isAuthenticated ? (
             <>
               <Text size="sm">Welcome, {authStore.username}</Text>
-              <Button variant="subtle" color="gray" size="sm" onClick={handleLogout}>
-                Logout
+              <Button variant="subtle" color="#00dd7c" size="sm" onClick={handleLogout}>
+                Log out
               </Button>
             </>
           ) : (
-            <Button variant="subtle" color="green" size="sm" onClick={() => navigate('/login')}>
-              Login
+            <Button variant="subtle" color="#00dd7c" size="sm" onClick={() => navigate('/login')}>
+              Log in
             </Button>
           )}
         </Group>
