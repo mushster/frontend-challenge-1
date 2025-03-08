@@ -4,7 +4,9 @@ This application is a healthcare claims management and MRF generation system. It
 
 ## Overview
 
-We use React and TypeScript for the frontend, with Mantine UI components and MobX for state management. The backend is built on Hono.js. Data validation is handled via Zod schemas.
+We use React and TypeScript for the frontend, with Mantine UI components and MobX for state management. The backend is built on Hono.js. Data validation is handled via Zod schemas. A Mermaid diagram is included below.
+
+![Mermaid Diagram](./mermaid.png)
 
 ## Application Flow
 
