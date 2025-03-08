@@ -12,9 +12,6 @@ const ClaimsTable = observer(() => {
   const [rowData, setRowData] = useState<(Claim & { id: number })[]>([]);
   const [showErrors, setShowErrors] = useState(false);
   
-  // Debug logs
-  console.log("ClaimsTable rendering, claims in store:", claimsStore.claims.length);
-  
   useEffect(() => {
     console.log("useEffect triggered, updating rowData with claims:", claimsStore.claims.length);
     

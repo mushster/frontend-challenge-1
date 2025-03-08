@@ -47,6 +47,16 @@ interface MrfFile {
   version: string;
 }
 
+interface MrfFileEntry {
+  id: string;
+  fileName: string;
+  plan: string;
+  createdDate: string;
+  fileSize: string;
+  status: "generated";
+  mrfData: MrfFile; // Store the actual MRF data
+}
+
 interface Claim {
   claimId: string;
   subscriberId: string;
@@ -72,41 +82,16 @@ const app = new Hono();
 // Enable CORS
 app.use('/*', cors());
 
+// In-memory storage for MRF files (in a real app, this would be a database)
+const mrfFilesStore: MrfFileEntry[] = [];
+
 app.get("/", (c) => {
   return c.text("Clearest Health API");
 });
 
 // List available MRF files
 app.get("/api/mrf-files", async (c) => {
-  // This would normally fetch from a database
-  const mrfFiles = [
-    {
-      id: "1",
-      fileName: "out-of-network-rates_clearest-health_2023-01-01.json",
-      plan: "Clearest Health Premium Plan",
-      createdDate: "2023-01-01",
-      fileSize: "2.3 MB",
-      status: "generated"
-    },
-    {
-      id: "2",
-      fileName: "out-of-network-rates_clearest-health_2023-02-15.json",
-      plan: "Clearest Health Basic Plan",
-      createdDate: "2023-02-15",
-      fileSize: "1.8 MB",
-      status: "generated"
-    },
-    {
-      id: "3",
-      fileName: "out-of-network-rates_clearest-health_2023-03-10.json",
-      plan: "Clearest Health Premium Plan",
-      createdDate: "2023-03-10",
-      fileSize: "3.1 MB",
-      status: "generated"
-    }
-  ];
-  
-  return c.json({ mrfFiles });
+  return c.json({ mrfFiles: mrfFilesStore });
 });
 
 // Generate MRF file endpoint
@@ -120,27 +105,35 @@ app.post("/api/generate-mrf", async (c) => {
     
     // Process claims data into MRF format
     const mrfData = convertClaimsToMrf(claims);
-    
-    // In a real implementation, we would save the file to storage
-    // For now, we'll simulate that step
     const today = new Date().toISOString().split('T')[0];
     const fileSize = JSON.stringify(mrfData).length / 1024;
     const formattedFileSize = fileSize > 1000 
       ? `${(fileSize / 1024).toFixed(1)} MB` 
       : `${Math.round(fileSize)} KB`;
     
-    const newMrfFile = {
+    const newMrfFile: MrfFileEntry = {
       id: crypto.randomUUID(),
       fileName: `out-of-network-rates_clearest-health_${today}.json`,
       plan: mrfData.plan_name || "Clearest Health Premium Plan",
       createdDate: today,
       fileSize: formattedFileSize,
-      status: "generated"
+      status: "generated",
+      mrfData: mrfData // Store the actual MRF data
     };
+    
+    // Store the generated MRF file
+    mrfFilesStore.unshift(newMrfFile);
     
     return c.json({ 
       success: true, 
-      mrfFile: newMrfFile
+      mrfFile: {
+        id: newMrfFile.id,
+        fileName: newMrfFile.fileName,
+        plan: newMrfFile.plan,
+        createdDate: newMrfFile.createdDate,
+        fileSize: newMrfFile.fileSize,
+        status: newMrfFile.status
+      }
     });
   } catch (error) {
     console.error("Error generating MRF file:", error);
@@ -151,27 +144,19 @@ app.post("/api/generate-mrf", async (c) => {
   }
 });
 
-// Download MRF file endpoint (would normally fetch from storage)
+// Download MRF file endpoint
 app.get("/api/mrf-files/:id/download", (c) => {
   const id = c.req.param('id');
   
-  // In a real implementation, we would fetch the file from storage
-  // For now, return a sample MRF file
-  const sampleMrfFile = {
-    "reporting_entity_name": "Clearest Health",
-    "reporting_entity_type": "health insurance issuer",
-    "plan_name": "Clearest Health Premium Plan",
-    "plan_id_type": "EIN",
-    "plan_id": "12-3456789",
-    "plan_market_type": "group",
-    "out_of_network": [
-      // Sample data would go here
-    ],
-    "last_updated_on": new Date().toISOString().split('T')[0],
-    "version": "1.0.0"
-  };
+  // Find the requested MRF file by ID
+  const mrfFile = mrfFilesStore.find(file => file.id === id);
   
-  return c.json(sampleMrfFile);
+  if (!mrfFile) {
+    return c.json({ error: "MRF file not found" }, 404);
+  }
+  
+  // Return the actual MRF data
+  return c.json(mrfFile.mrfData);
 });
 
 // Function to convert claims to MRF format

@@ -25,7 +25,6 @@ export class MrfStore {
     this.error = null;
 
     try {
-      // In a real implementation, fetch from the backend API
       const response = await fetch('http://localhost:8080/api/mrf-files');
       
       if (!response.ok) {
@@ -55,12 +54,10 @@ export class MrfStore {
     this.generatedMrfData = null;
 
     try {
-      // Validate we have claims to process
       if (claims.length === 0) {
         throw new Error("No claims data available to generate MRF file");
       }
-
-      // Send claims data to the backend API
+    
       const response = await fetch('http://localhost:8080/api/generate-mrf', {
         method: 'POST',
         headers: {
@@ -78,10 +75,8 @@ export class MrfStore {
       
       runInAction(() => {
         if (data.success && data.mrfFile) {
-          // Add the new MRF file to the list
           this.mrfFiles.unshift(data.mrfFile);
           
-          // Mark the claims as used in the claims store
           claimsStore.markClaimsAsUsedForMrf();
         } else {
           throw new Error(data.error || 'Unknown error generating MRF file');
@@ -107,7 +102,7 @@ export class MrfStore {
     this.error = null;
 
     try {
-      // Fetch the MRF file data from the backend
+      // Fetch the MRF file data
       const response = await fetch(`http://localhost:8080/api/mrf-files/${fileId}/download`);
       
       if (!response.ok) {

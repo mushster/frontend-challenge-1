@@ -154,22 +154,17 @@ export class ClaimsStore {
   approveAndExport = async () => {
     console.log("Approved claims ready for processing:", this.claims);
     
-    // Save the current claims to savedClaims for later use in MRF generation
+    // Save the current claims to savedClaims
     this.savedClaims = [...this.claims];
     this.claimsUsedForMrf = false;
     
-    // Show the success alert
     this.showSuccessAlert = true;
     
-    // Optionally, you could immediately trigger MRF generation here
-    // await mrfStore.generateMrfFile(this.claims);
   };
   
   dismissSuccessAlert = () => {
     this.showSuccessAlert = false;
-    // Clear the displayed claims but keep them in savedClaims
     this.claims = [];
-    // Also reset any related state while keeping data in savedClaims
     this.errors = {};
     this.parseError = null;
   };

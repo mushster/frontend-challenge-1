@@ -49,7 +49,7 @@ const Header = observer(() => {
             </>
           ) : (
             <Button variant="subtle" color="#00dd7c" size="sm" onClick={() => navigate('/login')}>
-              Log in
+              Login
             </Button>
           )}
         </Group>

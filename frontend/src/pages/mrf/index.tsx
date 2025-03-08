@@ -143,7 +143,7 @@ const MrfFilesPage = observer(() => {
           </Alert>
         ) : mrfStore.mrfFiles.length === 0 ? (
           <div className="py-12 text-center">
-            <Text c="dimmed">No MRF files found. Generate your first MRF file.</Text>
+            <Text c="dimmed">No MRF files found. </Text>
           </div>
         ) : (
           <Table striped highlightOnHover>
