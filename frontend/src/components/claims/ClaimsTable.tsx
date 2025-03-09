@@ -206,7 +206,7 @@ const ClaimsTable = observer(() => {
         </div>
       ) : (
         <div className="flex items-center justify-center h-64 bg-gray-50 rounded-md border">
-          <Text color="dimmed">No claims data. Upload a CSV file to get started.</Text>
+          <Text c="dimmed">No claims data. Upload a CSV file to get started.</Text>
         </div>
       )}
       

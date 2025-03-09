@@ -4,9 +4,9 @@ This application is a healthcare claims management and MRF generation system. It
 
 ## Overview
 
-We use React and TypeScript for the frontend, with Mantine UI components and MobX for state management. The backend is built on Hono.js. Data validation is handled via Zod schemas. A Mermaid diagram is included below.
+This application is a healthcare claims management and MRF generation system. It allows users to upload, validate, and manage healthcare claims data and generate MRF files for healthcare price transparency compliance. We use React and TypeScript for the frontend, with Mantine UI components and MobX for state management. The backend is built on Hono.js. Data validation is handled via Zod schemas. A Mermaid diagram is included below. We also include some basic unit tests.
 
-![Mermaid Diagram](./mermaid.png)
+![Mermaid Diagram](../mermaid.png)
 
 ## Application Flow
 
@@ -14,7 +14,7 @@ We use React and TypeScript for the frontend, with Mantine UI components and Mob
 Users log in through the `/login` route where their credentials are validated by the `authStore`. Once authenticated, users can access protected routes, which otherwise prevent unauthorized access and redirect to the login page.
 
 ### Claims Management Flow
-Users upload CSV files containing claims data. This data is parsed and validated against the `claimSchema`. Valid claims appear in the `ClaimsTable` component where users can edit, delete, or approve them. Approved claims can then be used to generate MRF files.
+Users upload CSV files containing claims data. This data is parsed and validated against the `claimSchema`. Valid claims appear in the `ClaimsTable` component where users can edit, delete, or approve them. Approved claims can then be used to generate MRF files. Basic tests are included for this component.
 
 ### MRF Generation Flow
 When ready, approved claims are sent to the backend where they're processed into the required MRF format. These generated files are stored and made available for download through the user interface.
@@ -33,7 +33,7 @@ Claims management is handled by the **ClaimsUpload** component for CSV file uplo
 ### MRF Components
 The **MrfFilesPage** lists available MRF files and allows generation of new ones. It displays file metadata such as name, date, and size, while providing download functionality.
 
-## State Management with MobX
+## State Management
 
 The application uses MobX for reactive state management with three main stores:
 
@@ -51,7 +51,7 @@ This store manages MRF file metadata, handles backend communication for MRF oper
 The interface is built with Mantine UI components. AG Grid and Tailwind CSS are used as outlined in the instructions. I used a color picker to find and integrate the exact green found on the Clearest Health website.
 ## Data Validation
 
-The application implements robust data validation using Zod schemas. The **claimSchema** defines the structure and constraints for claims data, while the **mrfSchema** defines the structure of MRF files for frontend validation. I used the sample csv file in the data folder as a guide for the schema. I chose this file over the one in the frontend directory because it contains more columns and is likely more represenative of real-world data.
+The application implements data validation using Zod schemas. The **claimSchema** defines the structure and constraints for claims data, while the **mrfSchema** defines the structure of MRF files. I used the sample csv file in the data folder as a guide for the schema. I chose this file over the one in the frontend directory because it contains more columns and is likely more represenative of real-world data.
 
 ## Backend API Interaction
 

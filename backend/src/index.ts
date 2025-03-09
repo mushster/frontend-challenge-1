@@ -82,7 +82,7 @@ const app = new Hono();
 // Enable CORS
 app.use('/*', cors());
 
-// In-memory storage for MRF files (in a real app, this would be a database)
+// In-memory storage for MRF files
 const mrfFilesStore: MrfFileEntry[] = [];
 
 app.get("/", (c) => {
@@ -200,7 +200,7 @@ function convertClaimsToMrf(claims: Claim[]): MrfFile {
     
     return {
       name: `Medical service: ${procedureCode}`,
-      billing_code_type: "CPT", // Assuming CPT codes for procedures
+      billing_code_type: "CPT", // Assuming CPT codes
       billing_code: procedureCode,
       billing_code_type_version: new Date().getFullYear().toString(), // Current year as version
       description: `Medical procedure ${procedureCode} for ${sampleClaim.plan}`,

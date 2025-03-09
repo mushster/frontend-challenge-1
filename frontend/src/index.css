@@ -16,7 +16,6 @@
   }
 }
 
-/* Add this for editable cell hover effect */
 .ag-theme-alpine .ag-row:hover .ag-cell {
   background-color: rgba(0, 0, 0, 0.05);
   cursor: pointer;
