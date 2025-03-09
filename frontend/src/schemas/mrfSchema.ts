@@ -46,7 +46,7 @@ export const mrfSchema = z.object({
   plan_id: z.string().optional(),
   plan_market_type: z.enum(["group", "individual"]).optional(),
   out_of_network: z.array(outOfNetworkSchema),
-  last_updated_on: z.string(), // ISO 8601 format (YYYY-MM-DD)
+  last_updated_on: z.string(),
   version: z.string(),
 });
 

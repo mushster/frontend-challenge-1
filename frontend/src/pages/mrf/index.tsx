@@ -16,6 +16,7 @@ import {
 import { IconFile, IconDownload, IconAlertCircle, IconCheck } from "@tabler/icons-react";
 import mrfStore from "../../stores/mrfStore";
 import claimsStore from "../../stores/claimsStore";
+import authStore from "../../stores/authStore";
 
 const MrfFilesPage = observer(() => {
   const [generateModalOpen, setGenerateModalOpen] = useState(false);
@@ -111,8 +112,9 @@ const MrfFilesPage = observer(() => {
         <Button 
           color="green" 
           onClick={() => setGenerateModalOpen(true)}
-          disabled={claimsStore.savedClaims.length === 0 || claimsStore.claimsUsedForMrf}
-          title={claimsStore.claimsUsedForMrf ? "Upload new claims data to generate another MRF file" : ""}
+          disabled={!authStore.isAuthenticated || claimsStore.savedClaims.length === 0 || claimsStore.claimsUsedForMrf}
+          title={!authStore.isAuthenticated ? "Please log in to generate MRF files" : 
+                 claimsStore.claimsUsedForMrf ? "Upload new claims data to generate another MRF file" : ""}
         >
           Generate New MRF File
         </Button>
@@ -129,7 +131,7 @@ const MrfFilesPage = observer(() => {
           </Alert>
         ) : mrfStore.mrfFiles.length === 0 ? (
           <div className="py-12 text-center">
-            <Text c="dimmed">No MRF files found. </Text>
+            <Text c="dimmed">No MRF files found</Text>
           </div>
         ) : (
           <Table striped highlightOnHover>

@@ -21,12 +21,19 @@ const Header = observer(() => {
   return (
     <div className="p-4 border-b">
       <div className="container mx-auto flex justify-between items-center">
-        {/* Logo section */}
         <div>
-          <Text size="lg" c="#00dd7c" fw={600}>Clearest Health</Text>
+          <Text 
+            size="lg" 
+            c="#00dd7c" 
+            fw={600} 
+            className="cursor-pointer" 
+            onClick={() => navigate('/login')}
+          >
+            Clearest Health
+          </Text>
         </div>
         
-        {/* Centered navigation tabs */}
+        {/* Navigation tabs */}
         <div className="flex-grow flex justify-center">
           <Tabs value={getActiveTab()} onChange={(value) => navigate(`/${value}`)}>
             <Tabs.List>

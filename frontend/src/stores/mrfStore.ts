@@ -23,29 +23,40 @@ export class MrfStore {
   fetchMrfFiles = async () => {
     this.isLoading = true;
     this.error = null;
+    let retries = 3;
 
-    try {
-      const response = await fetch('http://localhost:8080/api/mrf-files');
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch MRF files: ${response.statusText}`);
+    while (retries > 0) {
+      try {
+        const response = await fetch('http://localhost:8080/api/mrf-files');
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch MRF files: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        runInAction(() => {
+          this.mrfFiles = data.mrfFiles || [];
+          this.isLoading = false;
+        });
+        return; // Success, exit the retry loop
+      } catch (error) {
+        retries--;
+        if (retries === 0) {
+          runInAction(() => {
+            console.error("Error fetching MRF files:", error);
+            this.error = error instanceof Error ? error.message : "Failed to fetch MRF files";
+          });
+        } else {
+          // Wait before retrying (exponential backoff)
+          await new Promise(resolve => setTimeout(resolve, 1000 * (3 - retries)));
+        }
       }
-      
-      const data = await response.json();
-      
-      runInAction(() => {
-        this.mrfFiles = data.mrfFiles || [];
-      });
-    } catch (error) {
-      runInAction(() => {
-        console.error("Error fetching MRF files:", error);
-        this.error = error instanceof Error ? error.message : "Failed to fetch MRF files";
-      });
-    } finally {
-      runInAction(() => {
-        this.isLoading = false;
-      });
     }
+    
+    runInAction(() => {
+      this.isLoading = false;
+    });
   };
 
   generateMrfFile = async (claims: Claim[]) => {

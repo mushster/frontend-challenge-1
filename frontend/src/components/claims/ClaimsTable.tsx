@@ -192,6 +192,7 @@ const ClaimsTable = observer(() => {
             stopEditingWhenCellsLoseFocus={true}
             pagination={true}
             paginationPageSize={20}
+            paginationPageSizeSelector={[10, 20, 50, 100]}
             domLayout="normal"
             modules={[ClientSideRowModelModule]}
             singleClickEdit={true}
@@ -199,6 +200,8 @@ const ClaimsTable = observer(() => {
             rowClassRules={{
               'hover-highlight': () => true
             }}
+            rowBuffer={20}
+            rowModelType="clientSide"
           />
         </div>
       ) : (
